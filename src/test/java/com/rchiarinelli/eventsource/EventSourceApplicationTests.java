@@ -1,10 +1,11 @@
-package com.rchiarinelli.evensource;
+package com.rchiarinelli.eventsource;
 
-import org.junit.jupiter.api.Test;
+
+import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class EvensourceApplicationTests {
+class EventSourceApplicationTests {
 
 	@Test
 	void contextLoads() {
