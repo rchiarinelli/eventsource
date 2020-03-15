@@ -2,22 +2,16 @@ package com.rchiarinelli.eventsource;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+
+import lombok.extern.log4j.Log4j2;
 
 @SpringBootApplication
-@RestController
-@RequestMapping("/info")
+@Log4j2
 public class EventSourceApplication {
 
 	public static void main(String[] args) {
+		log.info("Starting EventSource application.");
 		SpringApplication.run(EventSourceApplication.class, args);
-	}
-
-	@GetMapping("/")
-	public String home() {
-	  return "Hello Docker World";
 	}
 
 }
