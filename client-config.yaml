@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eventsource
+data:
+  application.properties: |-
+    bean.message=Testing reload from K8S client-config file!!!!! Message from backend is: %s <br/> Services : %s
