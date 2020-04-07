@@ -28,6 +28,33 @@ public class GarageHandler {
     @CommandHandler
     public GarageHandler(CreateGarageSlotCommand command) {
         log.debug("Instantiating new garage handler with commmand." + this.getClass().hashCode());
+
+        GarageSlotCreatedEvent event = new GarageSlotCreatedEvent(command.getSlotId());
+
+        event.getGarageSlotData().addProperty("garageUUID", command.getGarageData().get("id").getAsString());
+
+        event.getGarageSlotData().addProperty("ownerUUID", command.getOwnerData().get("id").getAsString());
+        event.getGarageSlotData().addProperty("ownerName", command.getOwnerData().get("name").getAsString());
+
+        event.getGarageSlotData().addProperty("periodType", command.getSlotData().get("periodType").getAsString());
+        event.getGarageSlotData().addProperty("minimunTime", command.getSlotData().get("minimunTime").getAsDouble());
+        event.getGarageSlotData().addProperty("maximunTime", command.getSlotData().get("maximunTime").getAsDouble());
+        event.getGarageSlotData().addProperty("billingPeriodType", command.getSlotData().get("billingPeriodType").getAsString());
+        event.getGarageSlotData().addProperty("valuePerPeriod", command.getSlotData().get("valuePerPeriod").getAsDouble());
+        event.getGarageSlotData().addProperty("available", command.getSlotData().get("available").getAsBoolean());
+        event.getGarageSlotData().addProperty("active", command.getSlotData().get("active").getAsBoolean());
+
+        event.getGarageSlotData().addProperty("address1", command.getGarageData().get("address1").getAsString());
+        event.getGarageSlotData().addProperty("address2", command.getGarageData().get("address2").getAsString());
+        event.getGarageSlotData().addProperty("address3", command.getGarageData().get("address3").getAsString());
+        event.getGarageSlotData().addProperty("city", command.getGarageData().get("city").getAsString());
+        event.getGarageSlotData().addProperty("state", command.getGarageData().get("state").getAsString());
+        event.getGarageSlotData().addProperty("country", command.getGarageData().get("country").getAsString());
+        event.getGarageSlotData().addProperty("zipCode", command.getGarageData().get("zipCode").getAsString());
+        event.getGarageSlotData().addProperty("latitude", command.getGarageData().get("latitude").getAsDouble());
+        event.getGarageSlotData().addProperty("longitude", command.getGarageData().get("longitude").getAsDouble());
+
+
         AggregateLifecycle.apply(new GarageSlotCreatedEvent(command.getSlotId()));
     }
 
@@ -38,4 +65,5 @@ public class GarageHandler {
         this.garageSlotId = event.getGarageSlotId();
     }
 
+    
 }

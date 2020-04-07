@@ -22,13 +22,88 @@ public class GarageReservationProjector {
 
     @EventHandler
     public void on(GarageSlotCreatedEvent event) {
-        // FoodCartView foodCartView = new FoodCartView(event.getFoodCartId(),
-        // Collections.emptyMap());
-        // foodCartViewRepository.save(foodCartView);
+ 
+        GarageAggregateView view = new GarageAggregateView();
+        view.setGarageSlotId(event.getGarageSlotId());
 
         log.debug("Persisting new garage slot view aggregate.");
 
-        GarageSlotView view = new GarageSlotView(event.getGarageSlotId(), Collections.EMPTY_MAP);
+        if (event.getGarageSlotData().get("garageUUID") != null) {
+            view.setGarageUUID(event.getGarageSlotData().get("garageUUID").getAsString());
+        }
+
+        if (event.getGarageSlotData().get("ownerUUID") != null) {
+            view.setOwnerUUID(event.getGarageSlotData().get("ownerUUID").getAsString());
+        }
+
+        if (event.getGarageSlotData().get("periodType") != null) {
+            view.setPeriodType(event.getGarageSlotData().get("periodType").getAsString());
+        }
+
+        if (event.getGarageSlotData().get("minimunTime") != null) {
+            view.setMinimunTime(event.getGarageSlotData().get("minimunTime").getAsDouble());
+        }
+
+        if (event.getGarageSlotData().get("maximunTime") != null) {
+            view.setMaximunTime(event.getGarageSlotData().get("maximunTime").getAsDouble());
+        }
+
+        if (event.getGarageSlotData().get("billingPeriodType") != null) {
+            view.setBillingPeriodType(event.getGarageSlotData().get("billingPeriodType").getAsString());
+        }
+
+        if (event.getGarageSlotData().get("valuePerPeriod") != null) {
+            view.setValuePerPeriod(event.getGarageSlotData().get("valuePerPeriod").getAsDouble());
+        }
+
+        if (event.getGarageSlotData().get("available") != null) {
+            view.setAvailable(event.getGarageSlotData().get("available").getAsBoolean());
+        }
+
+        if (event.getGarageSlotData().get("active") != null) {
+            view.setActive(event.getGarageSlotData().get("active").getAsBoolean());
+        }
+
+        if (event.getGarageSlotData().get("address1") != null) {
+            view.setAddress1(event.getGarageSlotData().get("address1").getAsString());
+        }
+
+        if (event.getGarageSlotData().get("address2") != null) {
+            view.setAddress2(event.getGarageSlotData().get("address2").getAsString());
+        }
+
+        if (event.getGarageSlotData().get("address3") != null) {
+            view.setAddress3(event.getGarageSlotData().get("address3").getAsString());
+        }
+
+        if (event.getGarageSlotData().get("city") != null) {
+            view.setCity(event.getGarageSlotData().get("city").getAsString());
+        }
+
+        if (event.getGarageSlotData().get("state") != null) {
+            view.setState(event.getGarageSlotData().get("state").getAsString());
+        }
+
+        if (event.getGarageSlotData().get("country") != null) {
+            view.setCountry(event.getGarageSlotData().get("country").getAsString());
+        }
+
+        if (event.getGarageSlotData().get("zipCode") != null) {
+            view.setZipCode(event.getGarageSlotData().get("zipCode").getAsString());
+        }
+
+        if (event.getGarageSlotData().get("latitude") != null) {
+            view.setLatitude(event.getGarageSlotData().get("latitude").getAsDouble());
+        }
+
+        if (event.getGarageSlotData().get("longitude") != null) {
+            view.setLongitude(event.getGarageSlotData().get("longitude").getAsDouble());
+        }
+
+        if (event.getGarageSlotData().get("ownerName") != null) {
+            view.setOwnerName(event.getGarageSlotData().get("ownerName").getAsString());
+        }
+
         this.garageSlotViewRepository.save(view);
 
     }

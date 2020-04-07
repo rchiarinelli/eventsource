@@ -5,17 +5,21 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import com.rchiarinelli.eventsource.coreapi.commands.CreateGarageSlotCommand;
 import com.rchiarinelli.eventsource.k8s.ClientConfig;
+import com.rchiarinelli.eventsource.restresource.input.GarageSlotInput;
 
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +33,7 @@ import lombok.extern.log4j.Log4j2;
 @RestController
 @RequestMapping("/garageaggregate")
 @Log4j2
-public class GarageResource {
+public class GarageAggregateResource {
 
     private final CommandGateway commandGateway;
 
@@ -44,17 +48,48 @@ public class GarageResource {
     @Autowired
     private RestTemplate restTemplate;
 
-    public GarageResource(final CommandGateway commandGateway, final QueryGateway queryGateway) {
+    public GarageAggregateResource(final CommandGateway commandGateway, final QueryGateway queryGateway) {
         this.commandGateway = commandGateway;
         this.queryGateway = queryGateway;
     }
 
-    @PostMapping(path = { "", "/" })
-    public ResponseEntity<?> createGarageSlot() throws InterruptedException, ExecutionException {
+    @PostMapping(path = { "", "/" }, consumes = "application/json", produces =  "application/json")
+    public ResponseEntity<?> createGarageSlot(final GarageSlotInput input) throws InterruptedException, ExecutionException {
 
         log.debug("Creating garage slot.");
 
-        final CompletableFuture<UUID> resp = commandGateway.send(new CreateGarageSlotCommand(UUID.randomUUID()));
+        //Retrive garage info (address, geo location) and owner name
+        ResponseEntity<String> ownerResponse = this.restTemplate.getForEntity("http://ambassador/backend/garage/owner/"+input.getOwnerUUID(), String.class);
+
+        if (ownerResponse.getStatusCode() != HttpStatus.OK) {
+            return new ResponseEntity<String>(ownerResponse.getBody(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        ResponseEntity<String> garageResponse =  this.restTemplate.getForEntity("http://ambassador/backend/garage/garage/"+input.getGarageUUID(), String.class);
+
+        if (garageResponse.getStatusCode() != HttpStatus.OK) {
+            return new ResponseEntity<String>(garageResponse.getBody(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        //Call to create a new garage slot into garage-core
+        ResponseEntity<String> response = this.restTemplate.postForEntity("http://ambassador/backend/garage/owner", input, String.class);
+
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return new ResponseEntity<String>(response.getBody(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        JsonObject garageData = (JsonObject) JsonParser.parseString(garageResponse.getBody());
+        JsonObject ownerData = (JsonObject) JsonParser.parseString(ownerResponse.getBody());
+
+        Gson gson = new Gson();
+        ;
+
+        final CompletableFuture<UUID> resp = commandGateway.send(
+                            new CreateGarageSlotCommand(
+                                UUID.randomUUID()
+                                ,garageData
+                                ,ownerData
+                                ,gson.toJsonTree(input).getAsJsonObject()));
 
         return ResponseEntity.ok(resp.get());
     }
@@ -71,10 +106,6 @@ public class GarageResource {
         ResponseEntity<String> response = this.restTemplate.getForEntity(url, String.class);
         log.debug("Owners ",url,response);
 
-/*         url = "http://ambassador/backend/garage/owner/";
-        response = this.restTemplate.getForEntity(url, String.class);
-        log.debug("Owners ",url,response);
- */
         return response;
     }
 
