@@ -1,7 +1,5 @@
 package com.rchiarinelli.eventsource.query;
 
-import java.util.Collections;
-
 import com.rchiarinelli.eventsource.coreapi.events.GarageSlotCreatedEvent;
 import com.rchiarinelli.eventsource.coreapi.events.GarageSlotReservedEvent;
 
