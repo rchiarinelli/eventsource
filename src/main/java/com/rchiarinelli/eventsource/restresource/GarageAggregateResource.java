@@ -29,6 +29,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -62,9 +63,9 @@ public class GarageAggregateResource {
     }
 
     @PostMapping(path = { "", "/" }, consumes = "application/json", produces =  "application/json")
-    public ResponseEntity<?> createGarageSlot(final GarageSlotInput input) throws InterruptedException, ExecutionException {
+    public ResponseEntity<?> createGarageSlot(@RequestBody final GarageSlotInput input) throws InterruptedException, ExecutionException {
 
-        log.debug("Creating garage slot.");
+        log.debug("Creating garage slot. Input Data: " + input);
 
         //Retrive garage info (address, geo location) and owner name
         final ResponseEntity<String> ownerResponse = this.restTemplate
@@ -81,9 +82,18 @@ public class GarageAggregateResource {
             return new ResponseEntity<String>(garageResponse.getBody(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+
+        log.debug("OwnerResponse " + ownerResponse.getBody());
+
+        log.debug("GarageResponse " + garageResponse.getBody());
+
+
+
         // Call to create a new garage slot into garage-core
         final ResponseEntity<String> response = this.restTemplate
-                .postForEntity(endpointUrl+"/owner/garageslot", input, String.class);
+                .postForEntity(endpointUrl+"/garageslot", input, String.class);
+
+        log.debug("New Slot Response " + response.getBody());
 
         if (response.getStatusCode() != HttpStatus.OK) {
             return new ResponseEntity<String>(response.getBody(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -93,7 +103,6 @@ public class GarageAggregateResource {
         final JsonObject ownerData = (JsonObject) JsonParser.parseString(ownerResponse.getBody());
 
         final Gson gson = new Gson();
-        ;
 
         final CompletableFuture<UUID> resp = commandGateway.send(new CreateGarageSlotCommand(UUID.randomUUID(),
                 garageData, ownerData, gson.toJsonTree(input).getAsJsonObject()));
@@ -116,7 +125,7 @@ public class GarageAggregateResource {
     public ResponseEntity<String> getOwners() {
         log.debug("Retrieving owners");
 
-        final String url = "http://ambassador/backend/garage/owner";
+        final String url = endpointUrl + "/owner";
 
         final ResponseEntity<String> response = this.restTemplate.getForEntity(url, String.class);
         log.debug("Owners ", url, response);
@@ -134,7 +143,7 @@ public class GarageAggregateResource {
     public String load() {
 
         final RestTemplate restTemplate = new RestTemplate();
-        final String resourceUrl = "http://ambassador/backend/garage/owner";
+        final String resourceUrl = this.endpointUrl + "/owner";
         final ResponseEntity<String> response = restTemplate.getForEntity(resourceUrl, String.class);
 
         String serviceList = "";
