@@ -14,8 +14,12 @@ import lombok.ToString;
 @ToString
 public class GarageSlotInput {
 
+    @NotNull
+    @NotEmpty
     private String garageUUID;
 
+    @NotEmpty
+    @NotNull
     private String ownerUUID;
 
     @NotNull
@@ -23,11 +27,9 @@ public class GarageSlotInput {
     private String periodType;
 
     @NotNull
-    @NotEmpty
     private double minimunTime;
 
     @NotNull
-    @NotEmpty
     private double maximunTime;
 
     @NotNull
@@ -35,15 +37,12 @@ public class GarageSlotInput {
     private String billingPeriodType;
 
     @NotNull
-    @NotEmpty
     private double valuePerPeriod;
 
     @NotNull
-    @NotEmpty
     private boolean available;
 
     @NotNull
-    @NotEmpty
     private boolean active;
 
 }
