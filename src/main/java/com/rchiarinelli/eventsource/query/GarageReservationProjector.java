@@ -1,5 +1,7 @@
 package com.rchiarinelli.eventsource.query;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.rchiarinelli.eventsource.coreapi.events.GarageSlotCreatedEvent;
 import com.rchiarinelli.eventsource.coreapi.events.GarageSlotReservedEvent;
 
@@ -26,80 +28,82 @@ public class GarageReservationProjector {
 
         log.debug("Persisting new garage slot view aggregate.");
 
-        if (event.getGarageSlotData().get("garageUUID") != null) {
-            view.setGarageUUID(event.getGarageSlotData().get("garageUUID").getAsString());
+        final JsonObject slotData = (JsonObject)  JsonParser.parseString(event.getGarageSlotData());
+
+        if (slotData.get("garageUUID") != null) {
+            view.setGarageUUID(slotData.get("garageUUID").getAsString());
         }
 
-        if (event.getGarageSlotData().get("ownerUUID") != null) {
-            view.setOwnerUUID(event.getGarageSlotData().get("ownerUUID").getAsString());
+        if (slotData.get("ownerUUID") != null) {
+            view.setOwnerUUID(slotData.get("ownerUUID").getAsString());
         }
 
-        if (event.getGarageSlotData().get("periodType") != null) {
-            view.setPeriodType(event.getGarageSlotData().get("periodType").getAsString());
+        if (slotData.get("periodType") != null) {
+            view.setPeriodType(slotData.get("periodType").getAsString());
         }
 
-        if (event.getGarageSlotData().get("minimunTime") != null) {
-            view.setMinimunTime(event.getGarageSlotData().get("minimunTime").getAsDouble());
+        if (slotData.get("minimunTime") != null) {
+            view.setMinimunTime(slotData.get("minimunTime").getAsDouble());
         }
 
-        if (event.getGarageSlotData().get("maximunTime") != null) {
-            view.setMaximunTime(event.getGarageSlotData().get("maximunTime").getAsDouble());
+        if (slotData.get("maximunTime") != null) {
+            view.setMaximunTime(slotData.get("maximunTime").getAsDouble());
         }
 
-        if (event.getGarageSlotData().get("billingPeriodType") != null) {
-            view.setBillingPeriodType(event.getGarageSlotData().get("billingPeriodType").getAsString());
+        if (slotData.get("billingPeriodType") != null) {
+            view.setBillingPeriodType(slotData.get("billingPeriodType").getAsString());
         }
 
-        if (event.getGarageSlotData().get("valuePerPeriod") != null) {
-            view.setValuePerPeriod(event.getGarageSlotData().get("valuePerPeriod").getAsDouble());
+        if (slotData.get("valuePerPeriod") != null) {
+            view.setValuePerPeriod(slotData.get("valuePerPeriod").getAsDouble());
         }
 
-        if (event.getGarageSlotData().get("available") != null) {
-            view.setAvailable(event.getGarageSlotData().get("available").getAsBoolean());
+        if (slotData.get("available") != null) {
+            view.setAvailable(slotData.get("available").getAsBoolean());
         }
 
-        if (event.getGarageSlotData().get("active") != null) {
-            view.setActive(event.getGarageSlotData().get("active").getAsBoolean());
+        if (slotData.get("active") != null) {
+            view.setActive(slotData.get("active").getAsBoolean());
         }
 
-        if (event.getGarageSlotData().get("address1") != null) {
-            view.setAddress1(event.getGarageSlotData().get("address1").getAsString());
+        if (slotData.get("address1") != null) {
+            view.setAddress1(slotData.get("address1").getAsString());
         }
 
-        if (event.getGarageSlotData().get("address2") != null) {
-            view.setAddress2(event.getGarageSlotData().get("address2").getAsString());
+        if (slotData.get("address2") != null) {
+            view.setAddress2(slotData.get("address2").getAsString());
         }
 
-        if (event.getGarageSlotData().get("address3") != null) {
-            view.setAddress3(event.getGarageSlotData().get("address3").getAsString());
+        if (slotData.get("address3") != null) {
+            view.setAddress3(slotData.get("address3").getAsString());
         }
 
-        if (event.getGarageSlotData().get("city") != null) {
-            view.setCity(event.getGarageSlotData().get("city").getAsString());
+        if (slotData.get("city") != null) {
+            view.setCity(slotData.get("city").getAsString());
         }
 
-        if (event.getGarageSlotData().get("state") != null) {
-            view.setState(event.getGarageSlotData().get("state").getAsString());
+        if (slotData.get("state") != null) {
+            view.setState(slotData.get("state").getAsString());
         }
 
-        if (event.getGarageSlotData().get("country") != null) {
-            view.setCountry(event.getGarageSlotData().get("country").getAsString());
+        if (slotData.get("country") != null) {
+            view.setCountry(slotData.get("country").getAsString());
         }
 
-        if (event.getGarageSlotData().get("zipCode") != null) {
-            view.setZipCode(event.getGarageSlotData().get("zipCode").getAsString());
+        if (slotData.get("zipCode") != null) {
+            view.setZipCode(slotData.get("zipCode").getAsString());
         }
 
-        if (event.getGarageSlotData().get("latitude") != null) {
-            view.setLatitude(event.getGarageSlotData().get("latitude").getAsDouble());
+        if (slotData.get("latitude") != null) {
+            view.setLatitude(slotData.get("latitude").getAsDouble());
         }
 
-        if (event.getGarageSlotData().get("longitude") != null) {
-            view.setLongitude(event.getGarageSlotData().get("longitude").getAsDouble());
+        if (slotData.get("longitude") != null) {
+            view.setLongitude(slotData.get("longitude").getAsDouble());
         }
 
-        if (event.getGarageSlotData().get("ownerName") != null) {
-            view.setOwnerName(event.getGarageSlotData().get("ownerName").getAsString());
+        if (slotData.get("ownerName") != null) {
+            view.setOwnerName(slotData.get("ownerName").getAsString());
         }
 
         this.garageSlotViewRepository.save(view);

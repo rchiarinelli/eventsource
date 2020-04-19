@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import java.util.UUID;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.rchiarinelli.eventsource.coreapi.commands.CreateGarageSlotCommand;
 import com.rchiarinelli.eventsource.test.util.StubUtils;
 
@@ -38,9 +39,9 @@ public class GarageHandlerTest {
             .thenReturn(mockedApplyMore);
 
 
-        when(mockedCommand.getOwnerData()).thenReturn(StubUtils.createOwnerDataStub());
-        when(mockedCommand.getGarageData()).thenReturn(StubUtils.createGarageDataStub());
-        when(mockedCommand.getSlotData()).thenReturn(StubUtils.createGarageSlotStub());
+        when(mockedCommand.getOwnerData()).thenReturn(StubUtils.createOwnerDataStub().toString());
+        when(mockedCommand.getGarageData()).thenReturn(StubUtils.createGarageDataStub().toString());
+        when(mockedCommand.getSlotData()).thenReturn(StubUtils.createGarageSlotStub().toString());
         
 
         new GarageHandler(mockedCommand);

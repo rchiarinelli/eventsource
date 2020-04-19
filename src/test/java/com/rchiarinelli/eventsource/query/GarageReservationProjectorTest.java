@@ -52,7 +52,7 @@ public class GarageReservationProjectorTest {
 
 
         when(this.mockedEvent.getGarageSlotId()).thenReturn(UUID.randomUUID());
-        when(this.mockedEvent.getGarageSlotData()).thenReturn(garageSlotData);
+        when(this.mockedEvent.getGarageSlotData()).thenReturn(garageSlotData.toString());
         
 
         GarageReservationProjector projector = new GarageReservationProjector(this.mockedGarageSlotViewRepository);

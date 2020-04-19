@@ -2,6 +2,8 @@ package com.rchiarinelli.eventsource.handler;
 
 import java.util.UUID;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.rchiarinelli.eventsource.coreapi.commands.CreateGarageSlotCommand;
 import com.rchiarinelli.eventsource.coreapi.events.GarageSlotCreatedEvent;
 
@@ -29,33 +31,36 @@ public class GarageHandler {
     public GarageHandler(CreateGarageSlotCommand command) {
         log.debug("Instantiating new garage handler with commmand." + this.getClass().hashCode());
 
-        GarageSlotCreatedEvent event = new GarageSlotCreatedEvent(command.getSlotId());
+        final JsonObject garageData = (JsonObject) JsonParser.parseString(command.getGarageData());
+        final JsonObject ownerData = (JsonObject) JsonParser.parseString(command.getOwnerData());
+        final JsonObject slotData = (JsonObject)  JsonParser.parseString(command.getSlotData());
 
-        event.getGarageSlotData().addProperty("garageUUID", command.getGarageData().get("id").getAsString());
+        final JsonObject garageSlotData = new JsonObject();
 
-        event.getGarageSlotData().addProperty("ownerUUID", command.getOwnerData().get("id").getAsString());
-        event.getGarageSlotData().addProperty("ownerName", command.getOwnerData().get("name").getAsString());
+        garageSlotData.addProperty("garageUUID", garageData.get("id").getAsString());
 
-        event.getGarageSlotData().addProperty("periodType", command.getSlotData().get("periodType").getAsString());
-        event.getGarageSlotData().addProperty("minimunTime", command.getSlotData().get("minimunTime").getAsDouble());
-        event.getGarageSlotData().addProperty("maximunTime", command.getSlotData().get("maximunTime").getAsDouble());
-        event.getGarageSlotData().addProperty("billingPeriodType", command.getSlotData().get("billingPeriodType").getAsString());
-        event.getGarageSlotData().addProperty("valuePerPeriod", command.getSlotData().get("valuePerPeriod").getAsDouble());
-        event.getGarageSlotData().addProperty("available", command.getSlotData().get("available").getAsBoolean());
-        event.getGarageSlotData().addProperty("active", command.getSlotData().get("active").getAsBoolean());
+        garageSlotData.addProperty("ownerUUID", ownerData.get("id").getAsString());
+        garageSlotData.addProperty("ownerName", ownerData.get("name").getAsString());
 
-        event.getGarageSlotData().addProperty("address1", command.getGarageData().get("address1").getAsString());
-        event.getGarageSlotData().addProperty("address2", command.getGarageData().get("address2").getAsString());
-        event.getGarageSlotData().addProperty("address3", command.getGarageData().get("address3").getAsString());
-        event.getGarageSlotData().addProperty("city", command.getGarageData().get("city").getAsString());
-        event.getGarageSlotData().addProperty("state", command.getGarageData().get("state").getAsString());
-        event.getGarageSlotData().addProperty("country", command.getGarageData().get("country").getAsString());
-        event.getGarageSlotData().addProperty("zipCode", command.getGarageData().get("zipCode").getAsString());
-        event.getGarageSlotData().addProperty("latitude", command.getGarageData().get("latitude").getAsDouble());
-        event.getGarageSlotData().addProperty("longitude", command.getGarageData().get("longitude").getAsDouble());
+        garageSlotData.addProperty("periodType", slotData.get("periodType").getAsString());
+        garageSlotData.addProperty("minimunTime", slotData.get("minimunTime").getAsDouble());
+        garageSlotData.addProperty("maximunTime", slotData.get("maximunTime").getAsDouble());
+        garageSlotData.addProperty("billingPeriodType", slotData.get("billingPeriodType").getAsString());
+        garageSlotData.addProperty("valuePerPeriod", slotData.get("valuePerPeriod").getAsDouble());
+        garageSlotData.addProperty("available", slotData.get("available").getAsBoolean());
+        garageSlotData.addProperty("active", slotData.get("active").getAsBoolean());
 
+        garageSlotData.addProperty("address1", garageData.get("address1").getAsString());
+        garageSlotData.addProperty("address2", garageData.get("address2").getAsString());
+        garageSlotData.addProperty("address3", garageData.get("address3").getAsString());
+        garageSlotData.addProperty("city", garageData.get("city").getAsString());
+        garageSlotData.addProperty("state", garageData.get("state").getAsString());
+        garageSlotData.addProperty("country", garageData.get("country").getAsString());
+        garageSlotData.addProperty("zipCode", garageData.get("zipCode").getAsString());
+        garageSlotData.addProperty("latitude", garageData.get("latitude").getAsDouble());
+        garageSlotData.addProperty("longitude", garageData.get("longitude").getAsDouble());
 
-        AggregateLifecycle.apply(new GarageSlotCreatedEvent(command.getSlotId()));
+        AggregateLifecycle.apply(new GarageSlotCreatedEvent(command.getSlotId(), garageSlotData.toString()));
     }
 
 

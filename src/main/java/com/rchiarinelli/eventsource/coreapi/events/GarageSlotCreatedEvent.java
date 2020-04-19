@@ -14,11 +14,11 @@ public class GarageSlotCreatedEvent {
 
     private UUID garageSlotId;
 
-    private JsonObject garageSlotData;
+    private String garageSlotData;
 
-    public GarageSlotCreatedEvent(UUID garageSlotId) {
+    public GarageSlotCreatedEvent(UUID garageSlotId, String garageSlotData) {
         this.garageSlotId = garageSlotId;
-        garageSlotData = new JsonObject();
+        this.garageSlotData = garageSlotData;
     }
 
 } 

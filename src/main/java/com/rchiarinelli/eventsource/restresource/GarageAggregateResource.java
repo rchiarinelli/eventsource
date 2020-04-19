@@ -5,16 +5,14 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
-import com.rchiarinelli.eventsource.coreapi.commands.CreateGarageSlotCommand;
 import com.rchiarinelli.eventsource.coreapi.queries.GarageReservationSessionQuery;
 import com.rchiarinelli.eventsource.k8s.ClientConfig;
 import com.rchiarinelli.eventsource.query.GarageAggregateView;
 import com.rchiarinelli.eventsource.restresource.input.GarageSlotInput;
+import com.rchiarinelli.eventsource.service.GarageSlotService;
 
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
@@ -23,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,6 +54,9 @@ public class GarageAggregateResource {
     @Value("${garage.core.url}")
     private String endpointUrl;
 
+    @Autowired
+    private GarageSlotService garageSlotService;
+
     public GarageAggregateResource(final CommandGateway commandGateway, final QueryGateway queryGateway) {
         this.commandGateway = commandGateway;
         this.queryGateway = queryGateway;
@@ -67,61 +67,12 @@ public class GarageAggregateResource {
 
         log.debug("Creating garage slot. Input Data: " + input);
 
-        //Retrive garage info (address, geo location) and owner name
-        final ResponseEntity<String> ownerResponse = this.restTemplate
-                .getForEntity(endpointUrl+"/owner/" + input.getOwnerUUID(), String.class);
-
-        if (ownerResponse.getStatusCode() != HttpStatus.OK) {
-            return new ResponseEntity<String>(ownerResponse.getBody(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        final ResponseEntity<String> garageResponse = this.restTemplate
-                .getForEntity(endpointUrl+"/garage/" + input.getGarageUUID(), String.class);
-
-        if (garageResponse.getStatusCode() != HttpStatus.OK) {
-            return new ResponseEntity<String>(garageResponse.getBody(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-
-        log.debug("OwnerResponse " + ownerResponse.getBody());
-
-        log.debug("GarageResponse " + garageResponse.getBody());
-
-
-
-        // Call to create a new garage slot into garage-core
-        final ResponseEntity<String> response = this.restTemplate
-                .postForEntity(endpointUrl+"/garageslot", input, String.class);
-
-        log.debug("New Slot Response " + response.getBody());
-
-        if (response.getStatusCode() != HttpStatus.OK) {
-            return new ResponseEntity<String>(response.getBody(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        final JsonObject garageData = (JsonObject) JsonParser.parseString(garageResponse.getBody());
-        final JsonObject ownerData = (JsonObject) JsonParser.parseString(ownerResponse.getBody());
-
-        final Gson gson = new Gson();
-
-        final CompletableFuture<UUID> resp = commandGateway.send(new CreateGarageSlotCommand(UUID.randomUUID(),
-                garageData, ownerData, gson.toJsonTree(input).getAsJsonObject()));
-
-        return ResponseEntity.ok(resp.get());
-    }
-
-    // TODO GET method to retrieve aggregate
-
-    @GetMapping("/{garageAggregateId}")
-    public CompletableFuture<GarageAggregateView> findFoodCart(
-            @PathVariable("garageAggregateId") final String garageAggregateId) {
-        return queryGateway.query(new GarageReservationSessionQuery(UUID.fromString(garageAggregateId)),
-                ResponseTypes.instanceOf(GarageAggregateView.class));
+        return this.garageSlotService.createGarageSlot(input);
     }
 
     @GetMapping(path = { "/owner", "/owner/" }, produces = "application/json")
     @HystrixCommand(fallbackMethod = "getFallbackName", commandProperties = {
-            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "1000") })
+            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "10000") })
     public ResponseEntity<String> getOwners() {
         log.debug("Retrieving owners");
 
@@ -141,24 +92,29 @@ public class GarageAggregateResource {
 
     @GetMapping
     public String load() {
-
-        final RestTemplate restTemplate = new RestTemplate();
-        final String resourceUrl = this.endpointUrl + "/owner";
-        final ResponseEntity<String> response = restTemplate.getForEntity(resourceUrl, String.class);
-
+        log.debug("Loading configurations");
         String serviceList = "";
         if (discoveryClient != null) {
             final List<String> services = this.discoveryClient.getServices();
-
+            log.debug("Services " + services);
             for (final String service : services) {
 
                 final List<ServiceInstance> instances = this.discoveryClient.getInstances(service);
-
+                log.debug("Instances " + instances);
                 serviceList += ("[" + service + " : " + ((!CollectionUtils.isEmpty(instances)) ? instances.size() : 0) + " instances ]");
             }
         }
 
-        return String.format(config.getMessage(), response.getBody(), serviceList);
+        return config.getMessage() + "  " + serviceList;
     }
+
+     // TODO GET method to retrieve aggregate
+
+     @GetMapping("/{garageAggregateId}")
+     public CompletableFuture<GarageAggregateView> findFoodCart(
+             @PathVariable("garageAggregateId") final String garageAggregateId) {
+         return queryGateway.query(new GarageReservationSessionQuery(UUID.fromString(garageAggregateId)),
+                 ResponseTypes.instanceOf(GarageAggregateView.class));
+     }
 
 }

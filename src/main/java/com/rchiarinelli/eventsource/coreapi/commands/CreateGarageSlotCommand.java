@@ -14,13 +14,13 @@ public class CreateGarageSlotCommand {
     @RoutingKey
     private UUID slotId;
 
-    private JsonObject garageData;
+    private String garageData;
 
-    private JsonObject ownerData;
+    private String ownerData;
 
-    private JsonObject slotData;
+    private String slotData;
 
-    public CreateGarageSlotCommand(UUID slotId, JsonObject garageData, JsonObject ownerData, JsonObject slotData) {
+    public CreateGarageSlotCommand(UUID slotId, String garageData, String ownerData, String slotData) {
         this.slotId = slotId;
         this.garageData = garageData;
         this.ownerData = ownerData;
