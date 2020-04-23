@@ -2,8 +2,6 @@ package com.rchiarinelli.eventsource.coreapi.events;
 
 import java.util.UUID;
 
-import com.google.gson.JsonObject;
-
 import lombok.Getter;
 import lombok.Setter;
 

@@ -51,7 +51,7 @@ public class GarageAggregateResource {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("${garage.core.url}")
+    @Value("${gig.core.url}")
     private String endpointUrl;
 
     @Autowired

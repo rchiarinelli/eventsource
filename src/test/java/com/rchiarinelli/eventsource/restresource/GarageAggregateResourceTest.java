@@ -2,8 +2,6 @@ package com.rchiarinelli.eventsource.restresource;
 
 import java.util.concurrent.ExecutionException;
 
-import com.rchiarinelli.eventsource.restresource.input.GarageSlotInput;
-
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.queryhandling.QueryGateway;
 import org.junit.jupiter.api.Test;
@@ -32,12 +30,12 @@ public class GarageAggregateResourceTest {
     private GarageAggregateResource garageResource = new GarageAggregateResource(mockedCommandGateway,
             mockedQueryGateway);
 
-    @Value("${garage.core.url}")
+    @Value("${gig.core.url}")
     private String endpointUrl;
 
     @Test
     public void test_createGarageSlot() throws InterruptedException, ExecutionException {
-        final GarageSlotInput input = new GarageSlotInput();
+        //final GarageSlotInput input = new GarageSlotInput();
         Whitebox.setInternalState(garageResource, "endpointUrl", this.endpointUrl);
         // this.garageResource.createGarageSlot(input);
     }

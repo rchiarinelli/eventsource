@@ -16,7 +16,7 @@
 	<description>Event Source APIs</description>
 
 	<properties>
-		<java.version>1.8</java.version>
+		<java.version>14</java.version>
 		<axon.version>4.2</axon.version>
 		<spring-cloud-dependencies.version>Hoxton.SR1</spring-cloud-dependencies.version>
 		<spring.cloud.k8s.version>1.0.0.RELEASE</spring.cloud.k8s.version>

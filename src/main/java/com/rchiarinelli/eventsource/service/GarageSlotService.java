@@ -6,7 +6,6 @@ import java.util.concurrent.ExecutionException;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import com.rchiarinelli.eventsource.coreapi.commands.CreateGarageSlotCommand;
@@ -21,8 +20,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -39,7 +36,7 @@ public class GarageSlotService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("${garage.core.url}")
+    @Value("${gig.core.url}")
     private String endpointUrl;
 
 	public GarageSlotService(final CommandGateway commandGateway, final QueryGateway queryGateway) {

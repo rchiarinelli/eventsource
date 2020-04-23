@@ -3,10 +3,6 @@ package com.rchiarinelli.eventsource.handler;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.util.UUID;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.rchiarinelli.eventsource.coreapi.commands.CreateGarageSlotCommand;
 import com.rchiarinelli.eventsource.test.util.StubUtils;
 

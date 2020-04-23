@@ -2,8 +2,6 @@ package com.rchiarinelli.eventsource.coreapi.commands;
 
 import java.util.UUID;
 
-import com.google.gson.JsonObject;
-
 import org.axonframework.commandhandling.RoutingKey;
 
 import lombok.Getter;

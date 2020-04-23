@@ -1,6 +1,5 @@
 package com.rchiarinelli.eventsource.query;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.UUID;
