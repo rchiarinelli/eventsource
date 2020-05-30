@@ -31,7 +31,7 @@ public class ServiceProviderAggregate {
     private String providerImagePath;
 
     @Column(nullable = true)
-    private Double reviewRate;
+    private double reviewRate;
 
     @ElementCollection
     private Map<String, ServiceProviderRecommendation> recommendations;

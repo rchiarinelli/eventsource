@@ -18,10 +18,20 @@ public class ServiceProviderRecommendation {
     @Id
     private String id;
 
-    private Date recomendationDate;
-
     private String level;
 
     private String recommendedBy;
+
+    public ServiceProviderRecommendation() {
+    }
+
+    public ServiceProviderRecommendation(String id, String level, String recommendedBy) {
+        this.id = id;
+        this.level = level;
+        this.recommendedBy = recommendedBy;
+    }
+
+    
+    
 
 }
