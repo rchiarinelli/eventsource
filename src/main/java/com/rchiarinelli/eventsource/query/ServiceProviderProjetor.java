@@ -31,7 +31,7 @@ public class ServiceProviderProjetor {
 
         serviceProvider.setId(event.getServiceProviderId());
         serviceProvider.setProviderId(event.getData().getProviderId());
-        serviceProvider.setProviderImagePath(event.getData().getProviderImg());
+        serviceProvider.setProviderImagePath("IMAGEPATH");
         serviceProvider.setProviderName(event.getData().getProviderName());
         serviceProvider.setReviewRate(event.getData().getReviewRate());
         
@@ -44,21 +44,25 @@ public class ServiceProviderProjetor {
 
         final var serviceProvider = repository.findById(event.getServiceProviderId());
 
+        
+
         if (serviceProvider.isPresent()) {
             log.debug("Updating aggregate.");
 
             event.getDetails().ifPresent(detail -> {
                 log.debug("Adding service detail.");
+                serviceProvider.get().getServices();
                 serviceProvider.get().addService(detail.getId(), new ServiceDetails(detail.getId(), detail.getServiceName(), StringUtils.EMPTY, StringUtils.EMPTY, BigDecimal.valueOf(0D), 0D, 0));
 
             });
             event.getRecommendationDetails().ifPresent(recommendation -> {
                 log.debug("Adding recommendation.");
+                serviceProvider.get().getRecommendations();
                 serviceProvider.get().addRecommendation(recommendation.getId(), new ServiceProviderRecommendation(recommendation.getId(),recommendation.getLevel(),recommendation.getRecommendedBy()));
             } );
-        
-            repository.save(serviceProvider.get());
         }
+
+        repository.flush();
     }
 
 

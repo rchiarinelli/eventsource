@@ -6,11 +6,8 @@ import java.util.UUID;
 import com.rchiarinelli.eventsource.restresource.input.ServiceProviderInput.RecommendationDetailsInput;
 import com.rchiarinelli.eventsource.restresource.input.ServiceProviderInput.ServiceDetailsInput;
 
-import lombok.Getter;
-
 public class ServiceProviderUpdatedEvent {
 
-    @Getter
     private UUID serviceProviderId;
 
     private ServiceDetailsInput details;
@@ -25,11 +22,26 @@ public class ServiceProviderUpdatedEvent {
     }
 
     public Optional<ServiceDetailsInput> getDetails() {
-        return Optional.of(details);
+        return Optional.ofNullable(details);
     }
 
     public Optional<RecommendationDetailsInput> getRecommendationDetails() {
-        return Optional.of(recommendationDetails);
+        return Optional.ofNullable(recommendationDetails);
     }
 
+	public void setServiceProviderId(UUID serviceProviderId) {
+		this.serviceProviderId = serviceProviderId;
+	}
+
+	public void setDetails(ServiceDetailsInput details) {
+		this.details = details;
+	}
+
+	public void setRecommendationDetails(RecommendationDetailsInput recommendationDetails) {
+		this.recommendationDetails = recommendationDetails;
+	}
+
+	public UUID getServiceProviderId() {
+		return serviceProviderId;
+	}
 }

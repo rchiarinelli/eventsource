@@ -4,11 +4,6 @@ import java.util.UUID;
 
 import com.rchiarinelli.eventsource.restresource.input.ServiceProviderInput;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
 public class ServiceProviderCreatedEvent {
 
     private UUID serviceProviderId;
@@ -19,5 +14,23 @@ public class ServiceProviderCreatedEvent {
         this.serviceProviderId = serviceProviderId;
         this.data = d;        
     }
+
+	public UUID getServiceProviderId() {
+		return serviceProviderId;
+	}
+
+	public void setServiceProviderId(UUID serviceProviderId) {
+		this.serviceProviderId = serviceProviderId;
+	}
+
+	public ServiceProviderInput getData() {
+		return data;
+	}
+
+	public void setData(ServiceProviderInput data) {
+		this.data = data;
+	}
+    
+    
 
 }

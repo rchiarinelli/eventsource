@@ -10,7 +10,6 @@ import com.rchiarinelli.eventsource.restresource.input.ServiceProviderInput.Reco
 import com.rchiarinelli.eventsource.restresource.input.ServiceProviderInput.ServiceDetailsInput;
 import com.rchiarinelli.eventsource.service.ServiceProviderService;
 
-import org.axonframework.messaging.ExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -42,19 +41,13 @@ public class ServiceProviderResource {
         return ResponseEntity.ok(resp.toString());
     }
 
-    @PostMapping(path = { SERVICE_PATH + "/{uuid}",  SERVICE_PATH + "{uuid}/" }, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = { "/{uuid}/" + SERVICE_PATH  }, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addService(@PathVariable("uuid") @NotNull final String uuid, @Valid @RequestBody  final ServiceDetailsInput serviceDetails) {
-        final var response = ResponseEntity.ok();
-        response.body(service.addServiceToProvider(UUID.fromString(uuid),serviceDetails));
-        return response.build();
+        return ResponseEntity.ok(service.addServiceToProvider(UUID.fromString(uuid),serviceDetails));
     }
 
-    @PostMapping(path = { RECOMMENDATION_PATH + "/{uuid}",  RECOMMENDATION_PATH + "{uuid}/" }, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = { "/{uuid}/" + RECOMMENDATION_PATH }, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addRecommendation(@PathVariable("uuid") @NotNull final String uuid, @Valid @RequestBody  final RecommendationDetailsInput  recommendationData) {
-        final var response = ResponseEntity.ok();
-        response.body(service.addRecommendationToProvider(UUID.fromString(uuid), recommendationData));
-        return response.build();
+        return ResponseEntity.ok(service.addRecommendationToProvider(UUID.fromString(uuid), recommendationData));
     }
-
-    
 }

@@ -2,17 +2,16 @@ package com.rchiarinelli.eventsource.service;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
-import com.rchiarinelli.eventsource.coreapi.commands.create.CreateServiceProviderCommand;
-import com.rchiarinelli.eventsource.coreapi.commands.update.UpdateServiceProviderCommand;
+import com.rchiarinelli.eventsource.handler.ServiceProviderHandler.CreateServiceProviderCommand;
+import com.rchiarinelli.eventsource.handler.ServiceProviderHandler.UpdateServiceProviderCommand;
 import com.rchiarinelli.eventsource.restresource.input.ServiceProviderInput;
 import com.rchiarinelli.eventsource.restresource.input.ServiceProviderInput.RecommendationDetailsInput;
 import com.rchiarinelli.eventsource.restresource.input.ServiceProviderInput.ServiceDetailsInput;
 
 import org.axonframework.commandhandling.gateway.CommandGateway;
-import org.axonframework.messaging.ExecutionException;
 import org.axonframework.queryhandling.QueryGateway;
-import org.hibernate.type.UUIDBinaryType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -49,7 +48,7 @@ public class ServiceProviderServiceImpl implements ServiceProviderService {
         try {
             log.debug("Retrieving command result");
             return result.get();
-        } catch (InterruptedException | java.util.concurrent.ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             log.error(e);
             e.printStackTrace();
             return null;
@@ -66,7 +65,7 @@ public class ServiceProviderServiceImpl implements ServiceProviderService {
     @Override
     public Boolean addRecommendationToProvider(UUID serviceProviderId,
             RecommendationDetailsInput recommendationDetail) {
-        log.debug("Sending message to Axon Gateway. UpdateServiceProviderCommand");
+        log.debug("Sending message to Axon Gateway. UpdateServiceProviderCommand " + serviceProviderId.toString());
         commandGateway.send(new UpdateServiceProviderCommand(serviceProviderId, null, recommendationDetail));
         return Boolean.TRUE;
     }
