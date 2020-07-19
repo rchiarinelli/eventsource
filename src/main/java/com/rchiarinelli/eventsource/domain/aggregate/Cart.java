@@ -1,7 +1,8 @@
 package com.rchiarinelli.eventsource.domain.aggregate;
 
 import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -13,7 +14,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-
 @Entity
 @Getter
 @Setter
@@ -21,20 +21,19 @@ import lombok.Setter;
 public class Cart {
 
     public static enum CartStatus {
-        OPEN,
-        CANCELLED,
-        CHECKOUT;
+        OPEN, CANCELLED, CHECKOUT;
     }
-    
+
     @Id
     private UUID id;
 
     private String customerId;
 
     @ElementCollection
-    private Map<String,Map<String,Integer>> selectedServices;
+    @Builder.Default
+    private Set<CartItem> selectedServices = new HashSet<>();
 
-    @Column (nullable = false)
+    @Column(nullable = false)
     @Builder.Default
     private CartStatus status = CartStatus.OPEN;
 
@@ -79,40 +78,24 @@ public class Cart {
     }
 
     /**
-     * Add a selected service from a provider to to the cart using the service's identifier and provider's identifier.
+     * Add a selected service from a provider to to the cart using the service's
+     * identifier and provider's identifier.
      *
-     * @param providerId the provider identifier 
-     * @param serviceId the service identifier
+     * @param providerId the provider identifier
+     * @param serviceId  the service identifier
      */
-    public void addService(String providerId,String serviceId, Integer quantity) {
-        if (getSelectedServices() == null) {
-    		selectedServices = new HashMap<>();
-    	}
-        getSelectedServices().computeIfAbsent(providerId, m -> createItemDetails(serviceId, quantity));
-    }
-
-
-    /**
-     * 
-     * 
-     * @param serviceId
-     * @param quantity
-     * @return
-     */
-    Map<String,Integer> createItemDetails(String serviceId, Integer quantity) {
-        Map<String,Integer> item = new HashMap<>();
-        item.put(serviceId, quantity);
-        return item;
+    public void addService(String providerId, String serviceId, Integer quantity) {
+        getSelectedServices().add(CartItem.builder().providerId(providerId).serviceId(serviceId).quantity(quantity).build());
     }
 
     /**
      * Remove the service from the cart using the provider id and service identfier.
      * 
      * @param providerId the provideId
-     * @param serviceId the service indenfier
+     * @param serviceId  the service indenfier
      */
     public void removeServiceItem(String providerId, String serviceId) {
-        getSelectedServices().computeIfPresent(providerId, (serviceIdKey,m) ->{ m.remove(serviceIdKey); return m; });
+        getSelectedServices().removeIf(f -> f.getProviderId().equals(providerId) && f.getServiceId().equals(serviceId));
     }
 
     /**
@@ -122,11 +105,8 @@ public class Cart {
      * @param serviceId
      * @param quantity
      */
-    public void updateServiceItem(String providerId, String serviceId,Integer quantity) {
-        if (getSelectedServices() == null) {
-    		selectedServices = new HashMap<>();
-    	}
-        getSelectedServices().computeIfPresent(providerId, (serviceIdKey,m) ->{ m.putIfAbsent(serviceIdKey, quantity); return m; });
+    public void updateServiceItem(String providerId, String serviceId, Integer quantity) {
+        getSelectedServices().stream().filter(f -> f.getProviderId().equals(providerId) && f.getServiceId().equals(serviceId)).findFirst().ifPresent(item->item.setQuantity(quantity));
     }
 
     public void cancel() {
