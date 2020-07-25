@@ -5,13 +5,17 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
@@ -27,15 +31,28 @@ public class Cart {
     @Id
     private UUID id;
 
+    @Column(nullable = false)
     private String customerId;
 
-    @ElementCollection
+    @OneToMany(mappedBy="cart",cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     private Set<CartItem> selectedServices = new HashSet<>();
 
     @Column(nullable = false)
     @Builder.Default
     private CartStatus status = CartStatus.OPEN;
+
+
+    public Cart() {
+    }
+
+    public Cart(UUID id, String customerId, Set<CartItem> selectedServices, CartStatus status) {
+        this.id = id;
+        this.customerId = customerId;
+        this.selectedServices = selectedServices;
+        this.status = status;
+    }
+
 
     @Override
     public int hashCode() {
@@ -85,7 +102,7 @@ public class Cart {
      * @param serviceId  the service identifier
      */
     public void addService(String providerId, String serviceId, Integer quantity) {
-        getSelectedServices().add(CartItem.builder().providerId(providerId).serviceId(serviceId).quantity(quantity).build());
+        getSelectedServices().add(CartItem.builder().id(UUID.randomUUID()).providerId(providerId).serviceId(serviceId).quantity(quantity).cart(this).build());
     }
 
     /**
@@ -106,7 +123,12 @@ public class Cart {
      * @param quantity
      */
     public void updateServiceItem(String providerId, String serviceId, Integer quantity) {
-        getSelectedServices().stream().filter(f -> f.getProviderId().equals(providerId) && f.getServiceId().equals(serviceId)).findFirst().ifPresent(item->item.setQuantity(quantity));
+        getSelectedServices().stream().filter(f -> f.getProviderId().equals(providerId) && f.getServiceId().equals(serviceId)).findFirst().ifPresentOrElse(item->item.setQuantity(quantity),
+        new Runnable(){
+            public void run() {
+                addService(providerId, serviceId, quantity);
+            }
+        });
     }
 
     public void cancel() {
@@ -128,4 +150,8 @@ public class Cart {
     public boolean isConfirmed() {
         return getStatus() == CartStatus.CHECKOUT;
     }
+
+   
+
+    
 }

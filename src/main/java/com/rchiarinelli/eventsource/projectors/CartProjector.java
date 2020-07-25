@@ -5,7 +5,7 @@ import com.rchiarinelli.eventsource.coreapi.events.cart.CancelCartEvent;
 import com.rchiarinelli.eventsource.coreapi.events.cart.CheckoutCartEvent;
 import com.rchiarinelli.eventsource.coreapi.events.cart.OpenCartEvent;
 import com.rchiarinelli.eventsource.coreapi.events.cart.RemoveCartItemEvent;
-import com.rchiarinelli.eventsource.coreapi.events.cart.UpdateCartItem;
+import com.rchiarinelli.eventsource.coreapi.events.cart.UpdateCartItemEvent;
 import com.rchiarinelli.eventsource.domain.aggregate.Cart;
 import com.rchiarinelli.eventsource.domain.repositories.CartRepository;
 
@@ -21,7 +21,7 @@ public class CartProjector {
     private CartRepository repository;
 
     public CartProjector(CartRepository repository) {
-
+        this.repository = repository;
     }
 
     @EventHandler
@@ -41,7 +41,7 @@ public class CartProjector {
     }
 
     @EventHandler
-    public void on(UpdateCartItem updateEvent) {
+    public void on(UpdateCartItemEvent updateEvent) {
         repository.findById(updateEvent.getCartId()).filter(f -> f.isOpen()).ifPresent(cart -> {
             log.debug("Updating cart item");
             cart.updateServiceItem(updateEvent.getProviderId(), updateEvent.getServiceId(), updateEvent.getQuantity());

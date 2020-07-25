@@ -5,6 +5,7 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -27,6 +28,19 @@ public class CartItem {
 
     @Column(nullable = false)
     private Integer quantity;
+
+    @ManyToOne
+    private Cart cart;
+
+    public CartItem() {}
+
+    public CartItem(UUID id, String providerId, String serviceId, Integer quantity, Cart cart) {
+        this.id = id;
+        this.providerId = providerId;
+        this.serviceId = serviceId;
+        this.quantity = quantity;
+        this.cart = cart;
+    }
 
     @Override
     public int hashCode() {
@@ -70,4 +84,8 @@ public class CartItem {
             return false;
         return true;
     }
+
+
+
+    
 }

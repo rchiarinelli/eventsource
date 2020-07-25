@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class UpdateCartItem {
+public class UpdateCartItemEvent {
     
     private UUID cartId;
 

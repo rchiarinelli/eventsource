@@ -11,7 +11,8 @@ import com.rchiarinelli.eventsource.coreapi.events.cart.CancelCartEvent;
 import com.rchiarinelli.eventsource.coreapi.events.cart.CheckoutCartEvent;
 import com.rchiarinelli.eventsource.coreapi.events.cart.OpenCartEvent;
 import com.rchiarinelli.eventsource.coreapi.events.cart.RemoveCartItemEvent;
-import com.rchiarinelli.eventsource.coreapi.events.cart.UpdateCartItem;
+import com.rchiarinelli.eventsource.coreapi.events.cart.UpdateCartItemEvent;
+import com.rchiarinelli.eventsource.coreapi.events.servicerequest.CreateServiceRequestEvent;
 
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
@@ -23,25 +24,18 @@ import lombok.extern.log4j.Log4j2;
 
 @Aggregate
 @Log4j2
-public class CartHander {
+public class CartHandler {
     
     @AggregateIdentifier
     private UUID cartId;
 
-    public CartHander() {}
+    public CartHandler() {}
 
     @CommandHandler
-    public CartHander(OpenCartCommand command) {
+    public CartHandler(OpenCartCommand command) {
         log.debug("Received OpenCartCommand. Creating OpenCartEvent event.");
         AggregateLifecycle.apply(OpenCartEvent.builder().id(command.getCartId()).customerId(command.getCustomerId()).build());
     }
-
-    @EventSourcingHandler
-    public void on(OpenCartEvent event) {
-        log.debug("Cart opened. " + event.toString());
-        cartId = event.getId();
-    }
-
     @CommandHandler
     public void handle(CancelCartCommand command) {
         log.debug("Received CancelCartCommand.");
@@ -62,6 +56,20 @@ public class CartHander {
     @CommandHandler
     public void handle(UpdateCartItemCommand command) {
         log.debug("Received UpdateCartItemCommand.");
-        AggregateLifecycle.apply(UpdateCartItem.builder().cartId(cartId).providerId(command.getProviderId()).serviceId(command.getServiceId()).quantity(command.getQuantity()).build());
+        AggregateLifecycle.apply(UpdateCartItemEvent.builder().cartId(cartId).providerId(command.getProviderId()).serviceId(command.getServiceId()).quantity(command.getQuantity()).build());
+    }
+
+    
+    @EventSourcingHandler
+    public void on(OpenCartEvent event) {
+        log.debug("Cart opened. " + event.toString());
+        cartId = event.getId();
+    }
+
+    
+    @EventSourcingHandler
+    public void on(CheckoutCartCommand event) {
+        log.debug("Cart checked out. Creating service request.");
+        AggregateLifecycle.apply(CreateServiceRequestEvent.builder().serviceRequestAggregateId(UUID.randomUUID()).cartId(cartId).build());
     }
 }

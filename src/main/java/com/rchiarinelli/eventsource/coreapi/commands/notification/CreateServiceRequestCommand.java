@@ -1,4 +1,4 @@
-package com.rchiarinelli.eventsource.coreapi.commands.cart;
+package com.rchiarinelli.eventsource.coreapi.commands.notification;
 
 import java.util.UUID;
 
@@ -11,12 +11,15 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class OpenCartCommand {
+public class CreateServiceRequestCommand {
 
     @RoutingKey
-    private UUID cartId;
+    private UUID serviceRequestAggregateId;
 
-    private String customerId;
-    
-    
+    private UUID cartId;
 }
+
+
+
+
+   

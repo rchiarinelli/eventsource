@@ -27,7 +27,7 @@ public class ServiceRequestAggregate {
     @Id
     private UUID serviceRequestAggregateId;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String serviceRequestId;
 
     @Column(nullable = false)
@@ -39,6 +39,18 @@ public class ServiceRequestAggregate {
 
     @Column(nullable = true)
     private ServiceRequestStatusReason statusReason;
+
+
+    public ServiceRequestAggregate() {}
+
+    public ServiceRequestAggregate(UUID serviceRequestAggregateId, String serviceRequestId, UUID cartId,
+            ServiceRequestStatus status, ServiceRequestStatusReason statusReason) {
+        this.serviceRequestAggregateId = serviceRequestAggregateId;
+        this.serviceRequestId = serviceRequestId;
+        this.cartId = cartId;
+        this.status = status;
+        this.statusReason = statusReason;
+    }
 
     @Override
     public int hashCode() {
@@ -87,9 +99,14 @@ public class ServiceRequestAggregate {
         setStatus(ServiceRequestStatus.ACCEPTED);
     }
 
-    public void reject(ServiceRequestStatusReason reason) {
+    public void reject(final ServiceRequestStatusReason reason) {
         setStatus(ServiceRequestStatus.REJECTED);
         setStatusReason(reason);
+    }
+
+    public void associateCoreServiceRequest(final String serviceRequestId) {
+        setServiceRequestId(serviceRequestId);
+        setStatus(ServiceRequestStatus.PEDING);
     }
 
     public boolean isAccepted() {
@@ -103,7 +120,4 @@ public class ServiceRequestAggregate {
     public boolean isRejected() {
         return getStatus() == ServiceRequestStatus.REJECTED;
     }
-
-    
-
 }
